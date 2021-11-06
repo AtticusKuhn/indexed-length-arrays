@@ -1,5 +1,8 @@
 import { add, validIndex } from "./utils";
 
+
+// type LengthOf<Arr extends any[]> = Arr extends [infer _head, ...(infer tail)] ? add<1, LengthOf<tail>> : unknown;
+
 class IndexedArray<Length extends number, type> extends Array<type> {
     [n: number]: type;
     length!: Length;
@@ -13,26 +16,33 @@ class IndexedArray<Length extends number, type> extends Array<type> {
         //@ts-ignore
         return this[index];
     }
-    static fromArray<type>(arr: type[]): IndexedArray<typeof arr["length"], type> {
+    set<idx extends number>(index: idx, item: type): validIndex<idx, Length> extends true ? type : never {
+        this[index] = item;
+        //@ts-ignore
+        return this;
+    }
+    static fromArray<type, arrLength extends number>(arr: type[]): IndexedArray<arrLength, type> {
         let a = new IndexedArray<typeof arr["length"], type>(arr.length)
         Object.assign(a, arr)
+        //@ts-ignore
         return a;
+
     }
+
     //@ts-ignore
     push<inputArray extends type[], newLength extends inputArray["length"]>(...args: inputArray): IndexedArray<add<Length, newLength>, type> {
         //@ts-ignore
         return IndexedArray.fromArray([...this, ...args]);
     }
 
-
     shift(): type | undefined {
         throw new Error("Method not implemented.");
     }
 
 }
-//@ts-ignore
-const test: IndexedArray<5, number> = IndexedArray.fromArray([1, 2, 3, 4, 5])
+const a = [1, 2, 3, 4, 5]
+const test = IndexedArray.fromArray<number, 7>(a)
 
 const test2 = test.push(1, 2, 3, 4)
-const item = test2.get(10)
+const item = test2.get(5)
 console.log("item is", item)
