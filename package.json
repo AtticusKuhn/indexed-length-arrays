@@ -1,0 +1,12 @@
+{
+  "name": "dependentts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "run": "tsc && node ./dist/index.js"
+  },
+  "dependencies": {
+    "typescript": "^4.4.4"
+  }
+}
