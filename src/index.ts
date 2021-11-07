@@ -1,13 +1,14 @@
-import { add, validIndex } from "./utils";
+import { add, subtract, validIndex } from "./utils";
 
 
 // type LengthOf<Arr extends any[]> = Arr extends [infer _head, ...(infer tail)] ? add<1, LengthOf<tail>> : unknown;
-
+type repeat = any;
 class IndexedArray<Length extends number, type> extends Array<type> {
     [n: number]: type;
     length!: Length;
-    constructor(a: Length) {
-        super(a)
+    constructor(...args: type[]) {
+        super()
+        return IndexedArray.fromArray([...this, ...args]);
     }
     toString(): string {
         return JSON.stringify(this)
@@ -22,7 +23,7 @@ class IndexedArray<Length extends number, type> extends Array<type> {
         return this;
     }
     static fromArray<type, arrLength extends number>(arr: type[]): IndexedArray<arrLength, type> {
-        let a = new IndexedArray<typeof arr["length"], type>(arr.length)
+        let a = new IndexedArray<typeof arr["length"], type>(...arr)
         Object.assign(a, arr)
         //@ts-ignore
         return a;
@@ -34,14 +35,17 @@ class IndexedArray<Length extends number, type> extends Array<type> {
         //@ts-ignore
         return IndexedArray.fromArray([...this, ...args]);
     }
-
-    shift(): type | undefined {
-        throw new Error("Method not implemented.");
+    fromArray<inputArray extends type[], newLength extends inputArray["length"]>(args: inputArray): IndexedArray<add<Length, newLength>, type> {
+        //@ts-ignore
+        return IndexedArray.fromArray([...this, ...args]);
+    }
+    //@ts-ignore
+    slice<num extends number>(index: num): IndexedArray<subtract<Length, num>, type> {
+        return this.slice(index);
     }
 
 }
-const a = [1, 2, 3, 4, 5]
-const test = IndexedArray.fromArray<number, 7>(a)
+const test = new IndexedArray(4)
 
 const test2 = test.push(1, 2, 3, 4)
 const item = test2.get(5)

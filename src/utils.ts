@@ -109,12 +109,17 @@ type ToTuple<Count extends string | number> = Count extends '' | 0
     ? [...TenFold<ToTuple<Rest>>, ...LengthToTuple<Current & string>]
     : never
     : LengthToTuple<Count>
-type ToNumber<Type extends string> = Type extends ''
+type ToNumber<Type extends string> =
+
+    Type extends ''
     ? never
     : ToTuple<Type> extends { length: infer Length }
     ? Length
     : never
-export type add<A, B> = ToNumber<Sum<A, B>>;
+type parseNum<s extends string> = s extends `-${infer rest}` ? ToNumber<rest> : ToNumber<s>;
+export type add<A, B> = parseNum<Sum<A, B>>;
+//@ts-ignore
+export type subtract<A, B> = add<A, parseNum<`-${B}`>>
 
 
 type ParseNegativeNumber<N extends number> = `${N}` extends `-${infer PN}` ? PN : N;
